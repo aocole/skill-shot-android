@@ -31,3 +31,6 @@ proguard/
 *.ipr
 *.iws
 .idea/
+
+# secrets
+res/values/keys.xml

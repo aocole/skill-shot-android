@@ -1,5 +1,6 @@
 package com.skillshot.android.rest.model;
 
+
 public class Locality {
 	private String id;
 	private String name;
