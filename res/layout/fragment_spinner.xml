@@ -19,7 +19,7 @@
         android:layout_above="@+id/progressBar1"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="29dp"
-        android:text="Loading"
+        android:text="@string/loading"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

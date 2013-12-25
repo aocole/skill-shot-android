@@ -1,39 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
 
     <TextView
         android:id="@+id/locationName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/locationAllAges"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/locationName"
+        android:layout_alignBaseline="@id/locationName"
+        android:layout_marginLeft="8sp"
+        android:text="21+" />
+    
     <TextView
         android:id="@+id/locationAddress"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationName"
+        android:text="location address" />
 
     <TextView
         android:id="@+id/locationUrl"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationAddress"
+        android:autoLink="web"
+        android:text="location url" />
 
     <TextView
         android:id="@+id/locationPhone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationUrl"
+        android:text="location phone" />
+
+    <TextView
+        android:id="@+id/locationGamesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationPhone"
+        android:text="@string/games"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ListView
         android:id="@+id/gameListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
-	
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationGamesTitle" />
+
+    <ImageButton
+        android:contentDescription="@string/mapToThisLocation"
+        android:id="@+id/mapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@android:drawable/ic_dialog_map"
+        android:onClick="onMapButtonClick" />
+
+    <ImageButton
+        android:contentDescription="@string/callThisLocation"
+        android:id="@+id/callButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/mapButton"
+        android:src="@android:drawable/ic_menu_call"
+        android:onClick="onCallButtonClick" />
+
+</RelativeLayout>

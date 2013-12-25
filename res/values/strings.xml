@@ -3,6 +3,11 @@
 
     <string name="app_name">Skill Shot</string>
     <string name="action_settings">Settings</string>
+    <string name="action_login">Login</string>
     <string name="title_activity_location">Skill Shot</string>
-
+    <string name="games">Games</string>
+    <string name="loading">Loading</string>
+    <string name="mapToThisLocation">Map to this location</string>
+    <string name="callThisLocation">Call this location</string>
+    
 </resources>

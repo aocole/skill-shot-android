@@ -53,6 +53,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.skillshot.android.MainActivity" />
         </activity>
+        <activity
+            android:name="com.skillshot.android.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:parentActivityName="com.skillshot.android.MainActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.skillshot.android.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -6,8 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.skillshot.android.LocationActivity;
@@ -20,7 +21,7 @@ public class LocationFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Location location = (Location) this.getArguments().get(LocationActivity.LOCATION);
-		LinearLayout view = (LinearLayout) inflater.inflate(R.layout.fragment_location, container, false);
+		RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_location, container, false);
 		
 		TextView nameView = (TextView) view.findViewById(R.id.locationName);
 		nameView.setText(location.getName());
@@ -33,13 +34,22 @@ public class LocationFragment extends Fragment {
 		
 		TextView phoneView = (TextView) view.findViewById(R.id.locationPhone);
 		phoneView.setText(location.getPhone());
+		if (location.getPhone() == null || location.getPhone().equals("")) {
+			ImageButton callButton = (ImageButton) view.findViewById(R.id.callButton);
+			callButton.setVisibility(View.GONE);
+			phoneView.setVisibility(View.GONE);
+		}
 		
 		TextView urlView = (TextView) view.findViewById(R.id.locationUrl);
 		urlView.setText(location.getUrl());
+		if (location.getUrl() == null || location.getUrl().equals("")) {
+			urlView.setVisibility(View.GONE);
+		}
 		
 		ListView gameListView = (ListView) view.findViewById(R.id.gameListView);
 		ArrayAdapter<Machine> gameListAdapter = new ArrayAdapter<Machine>(getActivity(), android.R.layout.simple_list_item_1, location.getMachines());
 		gameListView.setAdapter(gameListAdapter);
+		
 		
 		return view;
 	}

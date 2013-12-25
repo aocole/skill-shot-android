@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,7 +25,7 @@ public class BaseActivity extends Activity implements
 	//	public final static String ENDPOINT = "http://list.skill-shot.com"; 
 	public final static String ENDPOINT = "http://172.16.5.176:5000"; 
 	protected SpiceManager spiceManager = new SpiceManager(GsonSpringAndroidSpiceService.class);
-	private LocationClient mLocationClient;
+	protected LocationClient mLocationClient;
 	
 	/*
 	 * Define a request code to send to Google Play services
@@ -239,5 +240,23 @@ public class BaseActivity extends Activity implements
              */
             showErrorDialog(connectionResult.getErrorCode());
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_login:
+                openLogin();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    private void openLogin() {
+		Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+		startActivity(intent);
+
     }
 }
