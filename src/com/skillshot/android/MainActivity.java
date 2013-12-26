@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -113,6 +114,20 @@ public class MainActivity extends BaseActivity implements LocationListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.d(APPTAG, "Preparing options menu");
+		MenuItem loggedInItem = menu.findItem(R.id.logged_in);
+
+		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
+		boolean showLoggedIn = tokenSettings.getString("token", null) != null;
+		Log.d(APPTAG, String.format("Token was %s", tokenSettings.getString("token", null)));
+	    Log.d(APPTAG, String.format("Show Logged In? %s", showLoggedIn));
+	    loggedInItem.setVisible(showLoggedIn);
+
+	    return true;
 	}
 
 	private void performRequest(String area) {

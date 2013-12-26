@@ -1,21 +1,28 @@
 package com.skillshot.android;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,12 +37,7 @@ import android.widget.Toast;
  * well.
  */
 public class LoginActivity extends BaseActivity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
+	public static final String LOGIN_PREFS = "com.skillshot.android.LOGIN_PREFS";
 
 	/**
 	 * The default email to populate the email field with.
@@ -66,7 +68,8 @@ public class LoginActivity extends BaseActivity {
 		setupActionBar();
 
 		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
+		SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, MODE_PRIVATE);
+		mEmail = settings.getString("email", null);
 		mEmailView = (EditText) findViewById(R.id.email);
 		mEmailView.setText(mEmail);
 
@@ -160,11 +163,11 @@ public class LoginActivity extends BaseActivity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 4) {
+		}/* else if (mPassword.length() < 4) {
 			mPasswordView.setError(getString(R.string.error_invalid_password));
 			focusView = mPasswordView;
 			cancel = true;
-		}
+		}*/
 
 		// Check for a valid email address.
 		if (TextUtils.isEmpty(mEmail)) {
@@ -237,12 +240,16 @@ public class LoginActivity extends BaseActivity {
 	 * the user.
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+		public boolean serverError;
 		private LoginResult result;
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			LoginCredentials creds = new LoginCredentials(mEmail, mPassword);
 			HttpHeaders requestHeaders = new HttpHeaders();
 			requestHeaders.setContentType(new MediaType("application","json"));
+			ArrayList<MediaType> accept = new ArrayList<MediaType>();
+			accept.add(new MediaType("application","json"));
+			requestHeaders.setAccept(accept);
 			HttpEntity<LoginCredentials> requestEntity = 
 					new HttpEntity<LoginCredentials>(creds, requestHeaders);
 			
@@ -250,25 +257,51 @@ public class LoginActivity extends BaseActivity {
 			restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 
 			String url = String.format("%s/user_session", ENDPOINT);
-//			try {
+			try {
 				ResponseEntity<LoginResult> responseEntity = 
 						restTemplate.exchange(url, HttpMethod.POST, requestEntity, LoginResult.class);
+				
 				result = responseEntity.getBody();
-//			} catch (InterruptedException e) {
-//				return false;
-//			}
+				if (result.getSuccess()) {
+					SharedPreferences settings = getSharedPreferences(LOGIN_PREFS, MODE_PRIVATE);
+					SharedPreferences.Editor editor = settings.edit();
+					// Save entered email address for next time
+					editor.putString("email", mEmail);
+					HttpHeaders headers = responseEntity.getHeaders();
+					List<String> val = headers.get("Set-Cookie");
+					if(null != val) {
+						String cookie = val.get(0);
+						editor.putString("token", cookie);
+						if (editor.commit()) {
+							Log.d(APPTAG, String.format("Stored token: %s", cookie));
+						} else {
+							Log.d(APPTAG, "Error saving token!!");
+						}
+					}
+				}
+
+			} catch (HttpServerErrorException e) {
+				serverError = true;
+				return false;
+			} catch (ResourceAccessException e) {
+				serverError = true;
+				return false;
+			}
 
 			return result.getSuccess();
 		}
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
+			boolean serverError = mAuthTask.serverError;
 			mAuthTask = null;
 			showProgress(false);
 
 			if (success) {
 				Toast.makeText(getBaseContext(), "Logged in successfully", Toast.LENGTH_SHORT).show();
 				finish();
+			} else if (serverError) {
+				Toast.makeText(getBaseContext(), "Server error. Please try again.", Toast.LENGTH_LONG).show();
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));
@@ -322,19 +355,11 @@ public class LoginActivity extends BaseActivity {
 	
 	private class LoginResult {
 		private boolean success;
-		private String token;
 		public boolean getSuccess() {
 			return success;
 		}
 		public void setSuccess(boolean success) {
 			this.success = success;
 		}
-		public String getToken() {
-			return token;
-		}
-		public void setToken(String token) {
-			this.token = token;
-		}
-		
 	}
 }
