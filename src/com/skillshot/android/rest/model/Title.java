@@ -19,5 +19,9 @@ public class Title implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String toString() {
+		return this.name;
+	}
 
 }

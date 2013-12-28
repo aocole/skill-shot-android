@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.octo.android.robospice.GsonSpringAndroidSpiceService;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.skillshot.android.rest.request.AuthenticationFailedException;
 
 public class BaseActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
@@ -259,4 +263,33 @@ public class BaseActivity extends Activity implements
 		startActivity(intent);
 
     }
+    
+	protected boolean isLoggedIn() {
+		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
+		return tokenSettings.getString(LoginActivity.PREF_TOKEN, null) != null;
+	}
+	
+	protected boolean checkAuthentication(SpiceException e) {
+		Log.d(APPTAG, "Checking authentication.");
+		if(!(e.getCause() instanceof AuthenticationFailedException)) {
+			return false;
+		}
+		Log.d(APPTAG, "Was authentication failure. Launching login.");
+		// Delete token so we don't think we're logged in any more
+		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
+		Editor editor = tokenSettings.edit();
+		editor.remove(LoginActivity.PREF_TOKEN);
+		editor.commit();
+
+		Toast.makeText(
+				getBaseContext(), 
+				"Login expired. Please log in again.", 
+				Toast.LENGTH_LONG).show();
+		
+		Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+		startActivity(intent);
+		return true;
+	}
+
+
 }

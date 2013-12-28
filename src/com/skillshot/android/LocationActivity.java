@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ public class LocationActivity extends BaseActivity {
 
 	public static final String LOCATION = "com.skillshot.android.LOCATION";
 	private Location location = null;
+	private String locationId = null;
 
 	public void setLocation(Location location) {
 		this.location = location;
@@ -34,7 +36,7 @@ public class LocationActivity extends BaseActivity {
 		setContentView(R.layout.activity_main);
 		
 		Intent intent = getIntent();
-	    String locationId = intent.getStringExtra(MainActivity.LOCATION_ID);
+	    locationId = intent.getStringExtra(MainActivity.LOCATION_ID);
 	    performRequest(locationId);
 
 	    // However, if we're being restored from a previous state,
@@ -63,7 +65,10 @@ public class LocationActivity extends BaseActivity {
 		@Override
 		public void onRequestFailure(SpiceException e) {
 			setProgressBarIndeterminateVisibility(false);
-			//XXX show error message
+			Toast.makeText(
+					getBaseContext(), 
+					"Couldn't load data from the server. Please exit the app and try again.", 
+					Toast.LENGTH_LONG).show();
 		}
 
 		@Override
@@ -86,17 +91,27 @@ public class LocationActivity extends BaseActivity {
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		Log.d(APPTAG, "Preparing options menu");
+		MenuItem addGameItem = menu.findItem(R.id.action_add_game);
+
+		boolean showLoggedIn = isLoggedIn();
+		Log.d(APPTAG, String.format("User is logged in? %s", showLoggedIn));
+	    addGameItem.setVisible(showLoggedIn);
+
+	    return true;
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
 			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		case R.id.action_add_game:
+			Intent intent = new Intent(getBaseContext(), AddGameActivity.class);
+			intent.putExtra(MainActivity.LOCATION_ID, locationId);
+			startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import android.animation.Animator;
@@ -38,6 +39,7 @@ import android.widget.Toast;
  */
 public class LoginActivity extends BaseActivity {
 	public static final String LOGIN_PREFS = "com.skillshot.android.LOGIN_PREFS";
+	public static final String PREF_TOKEN = "com.skillshot.android.PREF_TOKEN";
 
 	/**
 	 * The default email to populate the email field with.
@@ -271,7 +273,7 @@ public class LoginActivity extends BaseActivity {
 					List<String> val = headers.get("Set-Cookie");
 					if(null != val) {
 						String cookie = val.get(0);
-						editor.putString("token", cookie);
+						editor.putString(PREF_TOKEN, cookie);
 						if (editor.commit()) {
 							Log.d(APPTAG, String.format("Stored token: %s", cookie));
 						} else {
@@ -284,6 +286,9 @@ public class LoginActivity extends BaseActivity {
 				serverError = true;
 				return false;
 			} catch (ResourceAccessException e) {
+				serverError = true;
+				return false;
+			} catch (RestClientException e) {
 				serverError = true;
 				return false;
 			}
