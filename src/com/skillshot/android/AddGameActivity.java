@@ -8,15 +8,24 @@ import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.skillshot.android.rest.model.Machine;
+import com.skillshot.android.rest.model.Title;
 import com.skillshot.android.rest.model.TitlesList;
+import com.skillshot.android.rest.request.LocationRequest;
+import com.skillshot.android.rest.request.MachinePostRequest;
 import com.skillshot.android.rest.request.TitlesRequest;
-import com.skillshot.android.view.TitlesListFragment;
 
 public class AddGameActivity extends BaseActivity {
 
@@ -29,7 +38,7 @@ public class AddGameActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_add_game);
 		// Show the Up button in the action bar.
 		setupActionBar();
 		
@@ -69,13 +78,78 @@ public class AddGameActivity extends BaseActivity {
 		public void onRequestSuccess(TitlesList titlesList) {
 			setProgressBarIndeterminateVisibility(false);
 			setTitlesList(titlesList);
-			TitlesListFragment titlesListFragment = new TitlesListFragment();
-			Bundle args = new Bundle();
-			args.putSerializable(TITLES_LIST, titlesList);
-			titlesListFragment.setArguments(args);
-			getFragmentManager().beginTransaction().replace(R.id.container, titlesListFragment).commit();
+
+			ArrayAdapter<Title> adapter = new ArrayAdapter<Title>(getBaseContext(), android.R.layout.simple_list_item_1, titlesList);
+			ListView list = (ListView) findViewById(android.R.id.list);
+			list.setFastScrollEnabled(true);
+			list.setTextFilterEnabled(true);
+			list.setAdapter(adapter);
+			list.setOnItemClickListener(new TitleClickListener());
+			
+			
+			SearchView filter = (SearchView)findViewById(R.id.filter);
+			filter.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+				
+				@Override
+				public boolean onQueryTextSubmit(String query) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+				
+				@SuppressWarnings("unchecked")
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					ListView list = (ListView) findViewById(android.R.id.list);
+					((ArrayAdapter<Title>)list.getAdapter()).getFilter().filter(newText);
+					return false;
+				}
+			});
 		}
 	}
+	
+	private class TitleClickListener implements OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> listView, View itemView, int position,
+				long id) {
+			Title title = (Title)listView.getItemAtPosition(position);
+			MachinePostRequest request = new MachinePostRequest(locationId, title.getId());
+			SharedPreferences mPrefs = getSharedPreferences(LoginActivity.LOGIN_PREFS, Context.MODE_PRIVATE);
+			String cookie = mPrefs.getString(LoginActivity.PREF_TOKEN, null);
+			request.setCookie(cookie);
+
+			spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, new MachinePostRequestListener());
+			
+		}
+	}
+	
+	private class MachinePostRequestListener implements RequestListener<Machine> {
+
+		@Override
+		public void onRequestFailure(SpiceException e) {
+			Log.d(APPTAG, String.format("Spice raised an exception: %s", e));
+			setProgressBarIndeterminateVisibility(false);
+			if (checkAuthentication(e)) {
+				return;
+			}
+			Toast.makeText(
+					getBaseContext(), 
+					"Couldn't load data from the server. Please go back and try again.", 
+					Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onRequestSuccess(Machine machine) {
+			// Clear cached location information
+			spiceManager.removeDataFromCache(LocationRequest.class, new LocationRequest(locationId).createCacheKey());
+			Toast.makeText(
+					getBaseContext(), 
+					String.format("%s added successfully", machine.getTitle().getName()), 
+					Toast.LENGTH_SHORT).show();
+			navigateUp();
+		}
+		
+	}
+
 	
 	/**
 	 * Set up the {@link android.app.ActionBar}.
@@ -95,12 +169,16 @@ public class AddGameActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Intent locationIntent = NavUtils.getParentActivityIntent(this);
-			locationIntent.putExtra(MainActivity.LOCATION_ID, locationId);
-			NavUtils.navigateUpTo(this, locationIntent);
+			navigateUp();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private void navigateUp() {
+		Intent locationIntent = NavUtils.getParentActivityIntent(this);
+		locationIntent.putExtra(MainActivity.LOCATION_ID, locationId);
+		NavUtils.navigateUpTo(this, locationIntent);
 	}
 
 	public TitlesList getTitlesList() {
