@@ -119,10 +119,12 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.d(APPTAG, "Preparing options menu");
-		MenuItem loggedInItem = menu.findItem(R.id.logged_in);
+		MenuItem logoutItem = menu.findItem(R.id.action_logout);
+		MenuItem loginItem = menu.findItem(R.id.action_login);
 
 		boolean showLoggedIn = isLoggedIn();
-	    loggedInItem.setVisible(showLoggedIn);
+	    logoutItem.setVisible(showLoggedIn);
+	    loginItem.setVisible(!showLoggedIn);
 
 	    return true;
 	}

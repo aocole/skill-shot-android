@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -246,17 +250,20 @@ public class BaseActivity extends Activity implements
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_login:
-                openLogin();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_login:
+			openLogin();
+			return true;
+		case R.id.action_logout:
+			logout();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
     
     private void openLogin() {
 		Intent intent = new Intent(getBaseContext(), LoginActivity.class);
@@ -264,7 +271,7 @@ public class BaseActivity extends Activity implements
 
     }
     
-	protected boolean isLoggedIn() {
+	public boolean isLoggedIn() {
 		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
 		return tokenSettings.getString(LoginActivity.PREF_TOKEN, null) != null;
 	}
@@ -275,12 +282,8 @@ public class BaseActivity extends Activity implements
 			return false;
 		}
 		Log.d(APPTAG, "Was authentication failure. Launching login.");
-		// Delete token so we don't think we're logged in any more
-		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
-		Editor editor = tokenSettings.edit();
-		editor.remove(LoginActivity.PREF_TOKEN);
-		editor.commit();
-
+		
+		logout();
 		Toast.makeText(
 				getBaseContext(), 
 				"Login expired. Please log in again.", 
@@ -290,6 +293,16 @@ public class BaseActivity extends Activity implements
 		startActivity(intent);
 		return true;
 	}
+	
+	protected void logout() {
+		// Delete token so we don't think we're logged in any more
+		SharedPreferences tokenSettings = getSharedPreferences(LoginActivity.LOGIN_PREFS, MODE_PRIVATE);
+		Editor editor = tokenSettings.edit();
+		editor.remove(LoginActivity.PREF_TOKEN);
+		editor.commit();
 
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+	}
 
 }

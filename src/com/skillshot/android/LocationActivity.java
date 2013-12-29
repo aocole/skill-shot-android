@@ -106,7 +106,6 @@ public class LocationActivity extends BaseActivity {
 		MenuItem addGameItem = menu.findItem(R.id.action_add_game);
 
 		boolean showLoggedIn = isLoggedIn();
-		Log.d(APPTAG, String.format("User is logged in? %s", showLoggedIn));
 	    addGameItem.setVisible(showLoggedIn);
 
 	    return true;

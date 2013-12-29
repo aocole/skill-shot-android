@@ -18,12 +18,14 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
 	Context context; 
     int layoutResourceId;    
     ArrayList<Machine> data = null;
+    boolean isLoggedIn;
     
-	public MachineAdapter(Context context, int layoutResourceId, ArrayList<Machine> data) {
+	public MachineAdapter(Context context, int layoutResourceId, ArrayList<Machine> data, boolean isLoggedIn) {
 		super(context, layoutResourceId, data);
 		this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = data;
+        this.isLoggedIn = isLoggedIn;
 	}
 	
 	@Override
@@ -31,26 +33,28 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
         View row = convertView;
         MachineHolder holder = null;
         LocationActivity activity = ((LocationActivity)context);
-        if(row == null)
-        {
+        if(row == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             
             holder = new MachineHolder();
             holder.title = (TextView)row.findViewById(R.id.title);
-            holder.delete = (ImageButton)row.findViewById(R.id.delete);
-            holder.delete.setOnClickListener(activity.new MachineDeleteClickListener());
+            if (isLoggedIn) {
+	            holder.delete = (ImageButton)row.findViewById(R.id.delete);
+	            holder.delete.setOnClickListener(activity.new MachineDeleteClickListener());
+	            holder.delete.setVisibility(View.VISIBLE);
+            }
             
             row.setTag(holder);
-        }
-        else
-        {
+        } else {
             holder = (MachineHolder)row.getTag();
         }
         
         Machine machine = data.get(position);
         holder.title.setText(machine.getTitle().getName());
-        holder.delete.setTag(machine);
+        if (holder.delete != null) {
+        	holder.delete.setTag(machine);
+        }
         
         return row;
     }

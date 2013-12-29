@@ -3,6 +3,7 @@ package com.skillshot.android.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ public class LocationFragment extends Fragment {
 		addrView.setText(location.getAddress());
 		
 		TextView aaView = (TextView) view.findViewById(R.id.locationAllAges);
-		aaView.setText(location.isAll_ages() ? "All ages!" : "21+");
+		aaView.setText(location.isAll_ages() ? "All ages" : "21+");
 		
 		TextView phoneView = (TextView) view.findViewById(R.id.locationPhone);
 		phoneView.setText(location.getPhone());
@@ -50,7 +51,7 @@ public class LocationFragment extends Fragment {
 		
 		ListView gameListView = (ListView) view.findViewById(R.id.gameListView);
 		ArrayList<Machine> machineList = new ArrayList<Machine>(Arrays.asList(location.getMachines()));
-		MachineAdapter gameListAdapter = new MachineAdapter(getActivity(), R.layout.machine_list_item, machineList);
+		MachineAdapter gameListAdapter = new MachineAdapter(getActivity(), R.layout.machine_list_item, machineList, ((LocationActivity)getActivity()).isLoggedIn());
 
 		View header = (View)getActivity().getLayoutInflater().inflate(R.layout.machine_list_header, null);
 		gameListView.addHeaderView(header);
