@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:ignore="HardcodedText" >
+    tools:ignore="HardcodedText"
+    >
 
     <TextView
         android:id="@+id/locationName"
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="Name"
+	    android:paddingLeft="3dip" 
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -28,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/locationName"
+	    android:paddingLeft="3dip" 
         android:text="location address" />
 
     <TextView
@@ -36,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/locationAddress"
         android:autoLink="web"
+	    android:paddingLeft="3dip" 
         android:text="location url" />
 
     <TextView
@@ -43,21 +47,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/locationUrl"
+	    android:paddingLeft="3dip" 
         android:text="location phone" />
-
-    <TextView
-        android:id="@+id/locationGamesTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/locationPhone"
-        android:text="@string/games"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ListView
         android:id="@+id/gameListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/locationGamesTitle" />
+        android:layout_below="@id/locationPhone" />
 
     <ImageButton
         android:contentDescription="@string/mapToThisLocation"

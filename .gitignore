@@ -34,3 +34,7 @@ proguard/
 
 # secrets
 res/values/keys.xml
+res/values/keys.xml.debug
+res/values/keys.xml.release
+
+

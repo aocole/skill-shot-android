@@ -26,8 +26,8 @@ public class BaseActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
-	//	public final static String ENDPOINT = "http://list.skill-shot.com"; 
-	public final static String ENDPOINT = "http://172.16.5.176:5000"; 
+	public final static String ENDPOINT = "http://list.skill-shot.com"; 
+//	public final static String ENDPOINT = "http://172.16.5.176:5000"; 
 	protected SpiceManager spiceManager = new SpiceManager(GsonSpringAndroidSpiceService.class);
 	protected LocationClient mLocationClient;
 	

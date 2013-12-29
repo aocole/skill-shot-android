@@ -6,6 +6,7 @@
     <string name="action_login">Login</string>
     <string name="logged_in">Logged in</string>
     <string name="games">Games</string>
+    <string name="delete">Delete</string>
     <string name="filter">Filter</string>
     <string name="loading">Loading</string>
     <string name="mapToThisLocation">Map to this location</string>

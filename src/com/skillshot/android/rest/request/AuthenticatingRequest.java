@@ -1,8 +1,11 @@
 package com.skillshot.android.rest.request;
 
+import java.util.ArrayList;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 
 import android.util.Log;
@@ -36,6 +39,12 @@ public abstract class AuthenticatingRequest<RESULT> extends SpringAndroidSpiceRe
 	
 	protected HttpEntity<?> getRequestEntity() throws AuthenticationFailedException {
 		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(new MediaType("application","json"));
+		
+		ArrayList<MediaType> accept = new ArrayList<MediaType>();
+		accept.add(new MediaType("application","json"));
+		requestHeaders.setAccept(accept);
+
 		//set the session cookie
 		if (cookie == null) {
 			throw new AuthenticationFailedException();

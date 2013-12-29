@@ -1,6 +1,10 @@
 package com.skillshot.android;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -8,15 +12,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.skillshot.android.rest.model.Location;
+import com.skillshot.android.rest.model.Machine;
 import com.skillshot.android.rest.request.LocationRequest;
+import com.skillshot.android.rest.request.MachineDeleteRequest;
 import com.skillshot.android.view.LocationFragment;
+import com.skillshot.android.view.MachineAdapter;
 import com.skillshot.android.view.SpinnerFragment;
 
 public class LocationActivity extends BaseActivity {
@@ -58,7 +68,7 @@ public class LocationActivity extends BaseActivity {
 		LocationRequest request = new LocationRequest(locationId);
 		String lastRequestCacheKey = request.createCacheKey();
 
-		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_DAY, new LocationRequestListener());
+		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_HOUR, new LocationRequestListener());
 	}
 
 	private class LocationRequestListener implements RequestListener<Location> {
@@ -140,5 +150,80 @@ public class LocationActivity extends BaseActivity {
 		Intent intent = new Intent(android.content.Intent.ACTION_DIAL, uri);
 		startActivity(intent);	
 	}
+	
+    public class MachineDeleteClickListener implements OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			Machine machine = (Machine)v.getTag();
+			confirmDelete(machine);
+		}
+    	
+	}
+
+    public void deleteMachine(Machine machine) {
+		MachineDeleteRequest request = new MachineDeleteRequest(machine.getId());
+		SharedPreferences mPrefs = getSharedPreferences(LoginActivity.LOGIN_PREFS, Context.MODE_PRIVATE);
+		String cookie = mPrefs.getString(LoginActivity.PREF_TOKEN, null);
+		request.setCookie(cookie);
+
+		spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, new MachineDeleteRequestListener(machine));
+		
+    }
+    
+    public void confirmDelete(final Machine machine) {
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.setTitle("Confirm Deletion");
+        dialog.setMessage(String.format("Delete %s?", machine.getTitle().getName()));
+        dialog.setCancelable(true);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int buttonId) {
+        		deleteMachine(machine);
+            }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int buttonId) {
+            }
+        });
+        dialog.setIcon(android.R.drawable.ic_dialog_alert);
+        dialog.show();
+    }
+
+    private class MachineDeleteRequestListener implements RequestListener<Void> {
+    	private Machine machine;
+
+		public MachineDeleteRequestListener(Machine machine) {
+			this.machine = machine;
+		}
+
+		@Override
+		public void onRequestFailure(SpiceException e) {
+			Log.d(APPTAG, String.format("Spice raised an exception: %s", e));
+			setProgressBarIndeterminateVisibility(false);
+			if (checkAuthentication(e)) {
+				return;
+			}
+			Toast.makeText(
+					getBaseContext(), 
+					"Couldn't load data from the server. Please go back and try again.", 
+					Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onRequestSuccess(Void v) {
+			// Clear cached location information
+			spiceManager.removeDataFromCache(LocationRequest.class, new LocationRequest(locationId).createCacheKey());
+			ListView gameListView = (ListView) findViewById(R.id.gameListView);
+			MachineAdapter adapter = ((MachineAdapter) ((HeaderViewListAdapter)gameListView.getAdapter()).getWrappedAdapter());
+			adapter.remove(machine);
+			adapter.notifyDataSetChanged();
+			Toast.makeText(
+					getBaseContext(), 
+					String.format("Deleted %s", machine.getTitle().getName()), 
+					Toast.LENGTH_SHORT).show();			
+		}
+		
+	}
+
 	
 }

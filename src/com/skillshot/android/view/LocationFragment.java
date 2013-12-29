@@ -1,11 +1,13 @@
 package com.skillshot.android.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -47,9 +49,13 @@ public class LocationFragment extends Fragment {
 		}
 		
 		ListView gameListView = (ListView) view.findViewById(R.id.gameListView);
-		ArrayAdapter<Machine> gameListAdapter = new ArrayAdapter<Machine>(getActivity(), android.R.layout.simple_list_item_1, location.getMachines());
+		ArrayList<Machine> machineList = new ArrayList<Machine>(Arrays.asList(location.getMachines()));
+		MachineAdapter gameListAdapter = new MachineAdapter(getActivity(), R.layout.machine_list_item, machineList);
+
+		View header = (View)getActivity().getLayoutInflater().inflate(R.layout.machine_list_header, null);
+		gameListView.addHeaderView(header);
+
 		gameListView.setAdapter(gameListAdapter);
-		
 		
 		return view;
 	}
