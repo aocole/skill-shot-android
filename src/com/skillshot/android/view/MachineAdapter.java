@@ -19,6 +19,7 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
     int layoutResourceId;    
     ArrayList<Machine> data = null;
     boolean isLoggedIn;
+    boolean enabled = true;
     
 	public MachineAdapter(Context context, int layoutResourceId, ArrayList<Machine> data, boolean isLoggedIn) {
 		super(context, layoutResourceId, data);
@@ -54,6 +55,7 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
         holder.title.setText(machine.getTitle().getName());
         if (holder.delete != null) {
         	holder.delete.setTag(machine);
+            holder.delete.setEnabled(enabled);
         }
         
         return row;
@@ -64,5 +66,15 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
         TextView title;
         ImageButton delete;
     }
+    
+    @Override
+    public boolean isEnabled(int position) {
+        return isLoggedIn && enabled;
+    }
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		notifyDataSetChanged();
+	}
     
 }

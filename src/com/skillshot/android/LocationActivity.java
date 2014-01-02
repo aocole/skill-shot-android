@@ -161,6 +161,9 @@ public class LocationActivity extends BaseActivity {
 	}
 
     public void deleteMachine(Machine machine) {
+		getAdapter().setEnabled(false);
+		setProgressBarIndeterminateVisibility(true);
+
 		MachineDeleteRequest request = new MachineDeleteRequest(machine.getId());
 		SharedPreferences mPrefs = getSharedPreferences(LoginActivity.LOGIN_PREFS, Context.MODE_PRIVATE);
 		String cookie = mPrefs.getString(LoginActivity.PREF_TOKEN, null);
@@ -197,6 +200,8 @@ public class LocationActivity extends BaseActivity {
 
 		@Override
 		public void onRequestFailure(SpiceException e) {
+			getAdapter().setEnabled(true);
+			setProgressBarIndeterminateVisibility(false);
 			Log.d(APPTAG, String.format("Spice raised an exception: %s", e));
 			setProgressBarIndeterminateVisibility(false);
 			if (checkAuthentication(e)) {
@@ -210,10 +215,11 @@ public class LocationActivity extends BaseActivity {
 
 		@Override
 		public void onRequestSuccess(Void v) {
+			getAdapter().setEnabled(true);
+			setProgressBarIndeterminateVisibility(false);
 			// Clear cached location information
 			spiceManager.removeDataFromCache(LocationRequest.class, new LocationRequest(locationId).createCacheKey());
-			ListView gameListView = (ListView) findViewById(R.id.gameListView);
-			MachineAdapter adapter = ((MachineAdapter) ((HeaderViewListAdapter)gameListView.getAdapter()).getWrappedAdapter());
+			MachineAdapter adapter = getAdapter();
 			adapter.remove(machine);
 			adapter.notifyDataSetChanged();
 			Toast.makeText(
@@ -224,5 +230,10 @@ public class LocationActivity extends BaseActivity {
 		
 	}
 
+	private MachineAdapter getAdapter() {
+		ListView gameListView = (ListView) findViewById(R.id.gameListView);
+		return ((MachineAdapter) ((HeaderViewListAdapter)gameListView.getAdapter()).getWrappedAdapter());
+	}
+		
 	
 }

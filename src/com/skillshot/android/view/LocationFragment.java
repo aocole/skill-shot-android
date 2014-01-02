@@ -3,7 +3,6 @@ package com.skillshot.android.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;

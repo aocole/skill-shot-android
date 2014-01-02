@@ -6,13 +6,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -26,6 +24,7 @@ import com.skillshot.android.rest.model.TitlesList;
 import com.skillshot.android.rest.request.LocationRequest;
 import com.skillshot.android.rest.request.MachinePostRequest;
 import com.skillshot.android.rest.request.TitlesRequest;
+import com.skillshot.android.view.TitleAdapter;
 
 public class AddGameActivity extends BaseActivity {
 
@@ -79,7 +78,7 @@ public class AddGameActivity extends BaseActivity {
 			setProgressBarIndeterminateVisibility(false);
 			setTitlesList(titlesList);
 
-			ArrayAdapter<Title> adapter = new ArrayAdapter<Title>(getBaseContext(), android.R.layout.simple_list_item_1, titlesList);
+			TitleAdapter adapter = new TitleAdapter(getBaseContext(), android.R.layout.simple_list_item_1, titlesList);
 			ListView list = (ListView) findViewById(android.R.id.list);
 			list.setFastScrollEnabled(true);
 			list.setTextFilterEnabled(true);
@@ -96,11 +95,9 @@ public class AddGameActivity extends BaseActivity {
 					return false;
 				}
 				
-				@SuppressWarnings("unchecked")
 				@Override
 				public boolean onQueryTextChange(String newText) {
-					ListView list = (ListView) findViewById(android.R.id.list);
-					((ArrayAdapter<Title>)list.getAdapter()).getFilter().filter(newText);
+					getAdapter().getFilter().filter(newText);
 					return false;
 				}
 			});
@@ -111,6 +108,9 @@ public class AddGameActivity extends BaseActivity {
 		@Override
 		public void onItemClick(AdapterView<?> listView, View itemView, int position,
 				long id) {
+			getAdapter().setEnabled(false);
+			setProgressBarIndeterminateVisibility(true);
+
 			Title title = (Title)listView.getItemAtPosition(position);
 			MachinePostRequest request = new MachinePostRequest(locationId, title.getId());
 			SharedPreferences mPrefs = getSharedPreferences(LoginActivity.LOGIN_PREFS, Context.MODE_PRIVATE);
@@ -128,6 +128,7 @@ public class AddGameActivity extends BaseActivity {
 		public void onRequestFailure(SpiceException e) {
 			Log.d(APPTAG, String.format("Spice raised an exception: %s", e));
 			setProgressBarIndeterminateVisibility(false);
+			getAdapter().setEnabled(true);
 			if (checkAuthentication(e)) {
 				return;
 			}
@@ -135,11 +136,13 @@ public class AddGameActivity extends BaseActivity {
 					getBaseContext(), 
 					"Couldn't load data from the server. Please go back and try again.", 
 					Toast.LENGTH_LONG).show();
+			navigateUp();
 		}
 
 		@Override
 		public void onRequestSuccess(Machine machine) {
-			// Clear cached location information
+			setProgressBarIndeterminateVisibility(false);
+			getAdapter().setEnabled(true);
 			spiceManager.removeDataFromCache(LocationRequest.class, new LocationRequest(locationId).createCacheKey());
 			Toast.makeText(
 					getBaseContext(), 
@@ -150,7 +153,11 @@ public class AddGameActivity extends BaseActivity {
 		
 	}
 
-	
+	private TitleAdapter getAdapter() {
+		ListView listView = (ListView) findViewById(android.R.id.list);
+		return (TitleAdapter) listView.getAdapter();
+	}
+		
 	/**
 	 * Set up the {@link android.app.ActionBar}.
 	 */
