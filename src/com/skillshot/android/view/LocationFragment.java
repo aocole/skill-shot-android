@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Fragment;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,16 +37,21 @@ public class LocationFragment extends Fragment {
 		
 		TextView phoneView = (TextView) view.findViewById(R.id.locationPhone);
 		phoneView.setText(location.getPhone());
+		ImageButton callButton = (ImageButton) view.findViewById(R.id.callButton);
+		callButton.getDrawable().setColorFilter(LocationActivity.BUTTON_COLOR, Mode.SRC_ATOP);
 		if (location.getPhone() == null || location.getPhone().equals("")) {
-			ImageButton callButton = (ImageButton) view.findViewById(R.id.callButton);
 			callButton.setVisibility(View.GONE);
 			phoneView.setVisibility(View.GONE);
 		}
 		
-		TextView urlView = (TextView) view.findViewById(R.id.locationUrl);
-		urlView.setText(location.getUrl());
+		ImageButton mapButton = (ImageButton) view.findViewById(R.id.mapButton);
+		mapButton.getDrawable().setColorFilter(LocationActivity.BUTTON_COLOR, Mode.SRC_ATOP);
+		
+		
+		ImageButton websiteButton = (ImageButton) view.findViewById(R.id.websiteButton);
+		websiteButton.getDrawable().setColorFilter(LocationActivity.BUTTON_COLOR, Mode.SRC_ATOP);
 		if (location.getUrl() == null || location.getUrl().equals("")) {
-			urlView.setVisibility(View.GONE);
+			websiteButton.setVisibility(View.GONE);
 		}
 		
 		ListView gameListView = (ListView) view.findViewById(R.id.gameListView);

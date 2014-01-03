@@ -3,6 +3,7 @@ package com.skillshot.android.view;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.PorterDuff.Mode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ public class MachineAdapter extends ArrayAdapter<Machine> {
             if (isLoggedIn) {
 	            holder.delete = (ImageButton)row.findViewById(R.id.delete);
 	            holder.delete.setOnClickListener(activity.new MachineDeleteClickListener());
+	    		holder.delete.getDrawable().setColorFilter(LocationActivity.BUTTON_COLOR, Mode.SRC_ATOP);
 	            holder.delete.setVisibility(View.VISIBLE);
             }
             

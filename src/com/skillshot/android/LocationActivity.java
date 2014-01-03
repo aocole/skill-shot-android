@@ -1,10 +1,12 @@
 package com.skillshot.android;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -32,6 +34,7 @@ import com.skillshot.android.view.SpinnerFragment;
 public class LocationActivity extends BaseActivity {
 
 	public static final String LOCATION = "com.skillshot.android.LOCATION";
+	public static final int BUTTON_COLOR = Color.parseColor("#FF33b5e5");
 	private Location location = null;
 	private String locationId = null;
 
@@ -150,6 +153,15 @@ public class LocationActivity extends BaseActivity {
 		startActivity(intent);	
 	}
 	
+	public void onWebsiteButtonClick(View view) {
+		if (location == null) {
+			Toast.makeText(this, "Location data could not be loaded :-(", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(location.getUrl()));
+		startActivity(intent);	
+	}
+	
     public class MachineDeleteClickListener implements OnClickListener {
 
 		@Override
@@ -174,7 +186,9 @@ public class LocationActivity extends BaseActivity {
     }
     
     public void confirmDelete(final Machine machine) {
-        AlertDialog dialog = new AlertDialog.Builder(this).create();
+    	Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_menu_delete);
+        AlertDialog dialog = builder.create();
         dialog.setTitle("Confirm Deletion");
         dialog.setMessage(String.format("Delete %s?", machine.getTitle().getName()));
         dialog.setCancelable(true);
@@ -187,7 +201,6 @@ public class LocationActivity extends BaseActivity {
             public void onClick(DialogInterface dialog, int buttonId) {
             }
         });
-        dialog.setIcon(android.R.drawable.ic_dialog_alert);
         dialog.show();
     }
 

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:ignore="HardcodedText"
     >
-
+    
     <TextView
         android:id="@+id/locationName"
         android:layout_width="wrap_content"
@@ -14,66 +14,83 @@
         android:layout_alignParentTop="true"
         android:text="Name"
 	    android:paddingLeft="3dip" 
+        android:layout_alignParentLeft="true"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/locationAllAges"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/locationName"
-        android:layout_alignBaseline="@id/locationName"
-        android:layout_marginLeft="8sp"
+	    android:paddingLeft="3dip" 
+        android:layout_alignParentLeft="true"
+  		android:textStyle="bold"
+        android:layout_below="@id/locationName"
         android:text="21+" />
     
     <TextView
         android:id="@+id/locationAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/locationName"
+        android:layout_below="@id/locationAllAges"
+        android:layout_alignParentLeft="true"
 	    android:paddingLeft="3dip" 
         android:text="location address" />
-
-    <TextView
-        android:id="@+id/locationUrl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/locationAddress"
-        android:autoLink="web"
-	    android:paddingLeft="3dip" 
-        android:text="location url" />
 
     <TextView
         android:id="@+id/locationPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/locationUrl"
+        android:layout_below="@id/locationAddress"
+        android:layout_alignParentLeft="true"
 	    android:paddingLeft="3dip" 
         android:text="location phone" />
+
+	<LinearLayout
+	    android:id="@+id/buttonArea"
+	    style="?android:attr/buttonBarStyle"
+	    android:layout_below="@id/locationPhone"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="bottom|right"
+	    android:orientation="horizontal" >
+	
+	    <ImageButton
+	        android:contentDescription="@string/callThisLocation"
+	        android:id="@+id/callButton"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:src="@drawable/ic_action_call"
+	        android:onClick="onCallButtonClick" />
+
+    	<ImageButton
+	        android:contentDescription="@string/website"
+	        android:id="@+id/websiteButton"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:src="@drawable/ic_action_web_site"
+	        android:onClick="onWebsiteButtonClick" />
+	
+    	<ImageButton
+	        android:contentDescription="@string/mapToThisLocation"
+	        android:id="@+id/mapButton"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:src="@drawable/ic_action_place"
+	        android:onClick="onMapButtonClick" />
+	
+    		</LinearLayout>
 
     <ListView
         android:id="@+id/gameListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/locationPhone" />
+        android:layout_below="@id/buttonArea" />
 
-    <ImageButton
-        android:contentDescription="@string/mapToThisLocation"
-        android:id="@+id/mapButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:src="@android:drawable/ic_dialog_map"
-        android:onClick="onMapButtonClick" />
-
-    <ImageButton
-        android:contentDescription="@string/callThisLocation"
-        android:id="@+id/callButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/mapButton"
-        android:src="@android:drawable/ic_menu_call"
-        android:onClick="onCallButtonClick" />
 
 </RelativeLayout>
