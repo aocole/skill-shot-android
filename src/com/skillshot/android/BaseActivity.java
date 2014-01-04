@@ -297,7 +297,7 @@ public class BaseActivity extends Activity implements
 		editor.remove(LoginActivity.PREF_TOKEN);
 		editor.commit();
 
-		Intent intent = new Intent(this, MainActivity.class);
+		Intent intent = new Intent(this, MapActivity.class);
 		startActivity(intent);
 	}
 

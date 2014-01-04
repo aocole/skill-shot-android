@@ -11,7 +11,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import com.skillshot.android.MainActivity;
+import com.skillshot.android.MapActivity;
 import com.skillshot.android.R;
 
 public class FilterDialogFragment extends DialogFragment {
@@ -45,9 +45,9 @@ public class FilterDialogFragment extends DialogFragment {
 		boolean[] filters_checked = new boolean[checkbox_strings.size()]; 
 		Arrays.fill(filters_checked, false);
 		if (args != null) {
-			if (args.containsKey(MainActivity.FILTER_ALL_AGES)) {
+			if (args.containsKey(MapActivity.FILTER_ALL_AGES)) {
 				int filterIndex = checkbox_strings.indexOf(getResources().getString(R.string.all_ages));
-				filters_checked[filterIndex] = args.getBoolean(MainActivity.FILTER_ALL_AGES);
+				filters_checked[filterIndex] = args.getBoolean(MapActivity.FILTER_ALL_AGES);
 			}
 		}
 		

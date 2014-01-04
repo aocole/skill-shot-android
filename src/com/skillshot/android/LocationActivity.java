@@ -49,7 +49,7 @@ public class LocationActivity extends BaseActivity {
 		setContentView(R.layout.activity_main);
 		
 		Intent intent = getIntent();
-	    locationId = intent.getStringExtra(MainActivity.LOCATION_ID);
+	    locationId = intent.getStringExtra(MapActivity.LOCATION_ID);
 	    performRequest(locationId);
 
 	    // However, if we're being restored from a previous state,
@@ -122,7 +122,7 @@ public class LocationActivity extends BaseActivity {
 			return true;
 		case R.id.action_add_game:
 			Intent intent = new Intent(getBaseContext(), AddGameActivity.class);
-			intent.putExtra(MainActivity.LOCATION_ID, locationId);
+			intent.putExtra(MapActivity.LOCATION_ID, locationId);
 			startActivity(intent);
 			return true;
 		}

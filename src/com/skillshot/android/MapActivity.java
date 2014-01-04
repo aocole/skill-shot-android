@@ -33,7 +33,7 @@ import com.skillshot.android.rest.request.LocationsRequest;
 import com.skillshot.android.view.FilterDialogFragment;
 import com.skillshot.android.view.FilterDialogFragment.FilterDialogListener;
 
-public class MainActivity extends BaseActivity implements LocationListener, FilterDialogListener {
+public class MapActivity extends BaseActivity implements LocationListener, FilterDialogListener {
 	public static final String LOCALITIES_ARRAY = "com.skillshot.android.LOCALITIES_ARRAY";
 	public static final String LOCATION_ID = "com.skillshot.android.LOCATION_ID";
 	public static final String MAP_STATE = "com.skillshot.android.MAP_STATE";
@@ -118,7 +118,7 @@ public class MainActivity extends BaseActivity implements LocationListener, Filt
 		
 		userLocation = getLocation();
 		if (userLocation != null) {
-			LatLng pos = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+//			LatLng pos = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
 //			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, DEFAULT_ZOOM));
 //			Toast.makeText(this, "Found you!", Toast.LENGTH_SHORT).show();
 		} else {

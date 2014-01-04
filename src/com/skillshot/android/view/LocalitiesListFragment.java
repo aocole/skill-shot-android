@@ -10,14 +10,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.skillshot.android.MainActivity;
+import com.skillshot.android.MapActivity;
 import com.skillshot.android.R;
 import com.skillshot.android.rest.model.Locality;
 
 public class LocalitiesListFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		ArrayList<Locality> localities = (ArrayList<Locality>) this.getArguments().get(MainActivity.LOCALITIES_ARRAY);
+		ArrayList<Locality> localities = (ArrayList<Locality>) this.getArguments().get(MapActivity.LOCALITIES_ARRAY);
 		ArrayAdapter<Locality> adapter = new ArrayAdapter<Locality>(getActivity(), android.R.layout.simple_list_item_1, localities);
 		ListView view = (ListView) inflater.inflate(R.layout.fragment_localities_list, container, false);
 		view.setAdapter(adapter);

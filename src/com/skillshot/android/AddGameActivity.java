@@ -42,7 +42,7 @@ public class AddGameActivity extends BaseActivity {
 		setupActionBar();
 		
 		Intent intent = getIntent();
-	    locationId = intent.getStringExtra(MainActivity.LOCATION_ID);
+	    locationId = intent.getStringExtra(MapActivity.LOCATION_ID);
 
 	    performRequest();
 	}
@@ -177,7 +177,7 @@ public class AddGameActivity extends BaseActivity {
 	
 	private void navigateUp() {
 		Intent locationIntent = NavUtils.getParentActivityIntent(this);
-		locationIntent.putExtra(MainActivity.LOCATION_ID, locationId);
+		locationIntent.putExtra(MapActivity.LOCATION_ID, locationId);
 		NavUtils.navigateUpTo(this, locationIntent);
 	}
 
