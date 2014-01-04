@@ -7,12 +7,15 @@
     <string name="action_logout">Logout</string>
     <string name="games">Games</string>
     <string name="game">Game</string>
+    <string name="close">Close</string>
     <string name="delete">Delete</string>
-    <string name="filter">Filter</string>
+    <string name="action_filter">Filter</string>
     <string name="website">Website</string>
     <string name="mapToThisLocation">Map to this location</string>
     <string name="callThisLocation">Call this location</string>
     <string name="action_add_game">Add game</string>
     <string name="title_activity_add_game">AddGameActivity</string>
+    <string name="all_ages">All ages</string>
+    <string name="twentyone_plus">21+</string>
     
 </resources>

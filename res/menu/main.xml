@@ -1,6 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_filter"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_filter"
+        android:title="@string/action_filter"/>
+
+    <item
         android:id="@+id/action_login"
         android:orderInCategory="100"
         android:showAsAction="never"

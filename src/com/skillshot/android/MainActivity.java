@@ -1,5 +1,6 @@
 package com.skillshot.android;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,10 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.skillshot.android.rest.model.LocationsList;
 import com.skillshot.android.rest.request.LocationsRequest;
+import com.skillshot.android.view.FilterDialogFragment;
+import com.skillshot.android.view.FilterDialogFragment.FilterDialogListener;
 
-public class MainActivity extends BaseActivity implements LocationListener {
+public class MainActivity extends BaseActivity implements LocationListener, FilterDialogListener {
 	public static final String LOCALITIES_ARRAY = "com.skillshot.android.LOCALITIES_ARRAY";
 	public static final String LOCATION_ID = "com.skillshot.android.LOCATION_ID";
 	public static final String MAP_STATE = "com.skillshot.android.MAP_STATE";
@@ -38,7 +41,7 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	private final int SKILL_SHOT_YELLOW = 42;
 	private final String MAP_TAG = "com.skillshot.android.MAP_TAG";
 	private GoogleMap mMap;
-	private Map<Marker, String> allMarkersMap = new HashMap<Marker, String>();
+	private Map<Marker, com.skillshot.android.rest.model.Location> allMarkersMap = new HashMap<Marker, com.skillshot.android.rest.model.Location>();
 	private Location userLocation = null;
 	private LocationRequest locationUpdateParams;
 	private static final int PREFERRED_UPDATE_INTERVAL_MS = 5000;
@@ -47,6 +50,9 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	private static final float DEFAULT_ZOOM = 15;
 	public static double SHORTYS_LAT = 47.613834;
 	public static double SHORTYS_LONG = -122.345043;
+	
+	public static final String FILTER_ALL_AGES = "com.skillshot.android.FILTER_ALL_AGES";
+	private boolean filterAllAges = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +61,18 @@ public class MainActivity extends BaseActivity implements LocationListener {
 		setContentView(R.layout.activity_main);
 		Log.d(APPTAG, "onCreate");
 		
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey(FILTER_ALL_AGES)) {
+				filterAllAges = savedInstanceState.getBoolean(FILTER_ALL_AGES);
+			}
+		}
+
 		performRequest(DEFAULT_AREA_ID);
 
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
 		// we could end up with overlapping fragments.
 		if (savedInstanceState != null) {
-			Log.d(APPTAG, "create had a saved instance state");
 			return;
 		}
 
@@ -70,6 +81,14 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	}	
 	
 	
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putBoolean(FILTER_ALL_AGES, filterAllAges);
+		super.onSaveInstanceState(outState);
+	}
+
+
 
 	@Override
 	protected void onStart() {
@@ -128,6 +147,26 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	    return true;
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_filter:
+			openFilterDialog();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	private void openFilterDialog() {
+		Bundle args = new Bundle();
+		args.putBoolean(FILTER_ALL_AGES, filterAllAges);
+		FilterDialogFragment dialog = new FilterDialogFragment();
+		dialog.setArguments(args);
+		dialog.show(getFragmentManager(), null);
+	}
+    
 	private void performRequest(String area) {
 		setProgressBarIndeterminateVisibility(true);
 
@@ -159,8 +198,19 @@ public class MainActivity extends BaseActivity implements LocationListener {
 				.title(loc.getName())
 				.icon(BitmapDescriptorFactory.defaultMarker(SKILL_SHOT_YELLOW))
 				);
-				allMarkersMap.put(marker, loc.getId());
+				allMarkersMap.put(marker, loc);
 			}
+			filter();
+		}
+	}
+	
+	private void filter() {
+		for(Marker marker : allMarkersMap.keySet()) {
+			com.skillshot.android.rest.model.Location loc = (com.skillshot.android.rest.model.Location) allMarkersMap.get(marker);
+			boolean visible = 
+					(!filterAllAges || loc.isAll_ages()) // either we're not filtering or the location is all ages (if we are filtering)
+					;
+			marker.setVisible(visible);
 		}
 	}
 	
@@ -192,7 +242,7 @@ public class MainActivity extends BaseActivity implements LocationListener {
 	private class LocationClickListener implements GoogleMap.OnInfoWindowClickListener {
 		@Override
 		public void onInfoWindowClick(Marker marker) {
-			String locationId = allMarkersMap.get(marker);
+			String locationId = allMarkersMap.get(marker).getId();
 			Intent intent = new Intent(getBaseContext(), LocationActivity.class);
 			intent.putExtra(LOCATION_ID, locationId);
 			startActivity(intent);
@@ -248,5 +298,14 @@ public class MainActivity extends BaseActivity implements LocationListener {
 
 	double getDouble(final SharedPreferences prefs, final String key, final double defaultValue) {
 		return Double.longBitsToDouble(prefs.getLong(key, Double.doubleToLongBits(defaultValue)));
-	}	
+	}
+
+
+
+	@Override
+	public void onFilterCheckboxes(ArrayList<String> filters) {
+		filterAllAges = filters.contains(getResources().getString(R.string.all_ages));
+		filter();
+	}
+	
 }

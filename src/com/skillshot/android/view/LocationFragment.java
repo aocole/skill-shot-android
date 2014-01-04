@@ -33,7 +33,7 @@ public class LocationFragment extends Fragment {
 		addrView.setText(location.getAddress());
 		
 		TextView aaView = (TextView) view.findViewById(R.id.locationAllAges);
-		aaView.setText(location.isAll_ages() ? "All ages" : "21+");
+		aaView.setText(location.isAll_ages() ? R.string.all_ages : R.string.twentyone_plus);
 		
 		TextView phoneView = (TextView) view.findViewById(R.id.locationPhone);
 		phoneView.setText(location.getPhone());
