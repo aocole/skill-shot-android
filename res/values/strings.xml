@@ -10,6 +10,7 @@
     <string name="close">Close</string>
     <string name="delete">Delete</string>
     <string name="action_filter">Filter</string>
+    <string name="action_list">List</string>
     <string name="website">Website</string>
     <string name="mapToThisLocation">Map to this location</string>
     <string name="callThisLocation">Call this location</string>
@@ -17,5 +18,7 @@
     <string name="title_activity_add_game">AddGameActivity</string>
     <string name="all_ages">All ages</string>
     <string name="twentyone_plus">21+</string>
-    
+    <string name="title_activity_location_list">LocationListActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

@@ -70,6 +70,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.skillshot.android.LocationActivity" />
         </activity>
+        <activity
+            android:name="com.skillshot.android.LocationListActivity"
+            android:label="@string/title_activity_location_list"
+            android:parentActivityName="com.skillshot.android.MapActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.skillshot.android.MapActivity" />
+        </activity>
     </application>
 
 </manifest>

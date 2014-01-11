@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -34,10 +36,10 @@ import com.skillshot.android.view.FilterDialogFragment;
 import com.skillshot.android.view.FilterDialogFragment.FilterDialogListener;
 
 public class MapActivity extends BaseActivity implements LocationListener, FilterDialogListener {
-	public static final String LOCALITIES_ARRAY = "com.skillshot.android.LOCALITIES_ARRAY";
+	public static final String LOCATIONS_ARRAY = "com.skillshot.android.LOCATIONS_ARRAY";
 	public static final String LOCATION_ID = "com.skillshot.android.LOCATION_ID";
 	public static final String MAP_STATE = "com.skillshot.android.MAP_STATE";
-	private final String DEFAULT_AREA_ID = "seattle";
+	public static final String DEFAULT_AREA_ID = "seattle";
 	private final int SKILL_SHOT_YELLOW = 42;
 	private final String MAP_TAG = "com.skillshot.android.MAP_TAG";
 	private GoogleMap mMap;
@@ -67,7 +69,7 @@ public class MapActivity extends BaseActivity implements LocationListener, Filte
 			}
 		}
 
-		performRequest(DEFAULT_AREA_ID);
+		performRequest(this, spiceManager, new ListLocationsRequestListener());
 
 		// However, if we're being restored from a previous state,
 		// then we don't need to do anything and should return or else
@@ -154,6 +156,9 @@ public class MapActivity extends BaseActivity implements LocationListener, Filte
 		case R.id.action_filter:
 			openFilterDialog();
 			return true;
+		case R.id.action_list:
+			openList();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -167,13 +172,18 @@ public class MapActivity extends BaseActivity implements LocationListener, Filte
 		dialog.show(getFragmentManager(), null);
 	}
     
-	private void performRequest(String area) {
-		setProgressBarIndeterminateVisibility(true);
+	private void openList() {
+		Intent intent = new Intent(this, LocationListActivity.class);
+		startActivity(intent);
+	}
+    
+	public static void performRequest(Activity activity, SpiceManager spiceManager, RequestListener<LocationsList> listener) {
+		activity.setProgressBarIndeterminateVisibility(true);
 
 		LocationsRequest request = new LocationsRequest();
 		String lastRequestCacheKey = request.createCacheKey();
 
-		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_WEEK, new ListLocationsRequestListener());
+		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ALWAYS_EXPIRED, listener);
 	}
 
 	private class ListLocationsRequestListener implements RequestListener<LocationsList> {
