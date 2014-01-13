@@ -15,6 +15,14 @@
         android:title="@string/action_list"/>
 
     <item
+        android:id="@+id/action_map"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="@string/action_map"
+        android:visible="false" />
+
+    <item
         android:id="@+id/action_login"
         android:orderInCategory="100"
         android:showAsAction="never"

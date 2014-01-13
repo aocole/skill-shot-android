@@ -1,62 +1,30 @@
 package com.skillshot.android;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
+import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Filterable;
-import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.MapFragment;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 import com.skillshot.android.rest.model.Location;
-import com.skillshot.android.rest.model.LocationsList;
-import com.skillshot.android.rest.model.Title;
+import com.skillshot.android.view.FilterDialogFragment.SortingDialogListener;
 import com.skillshot.android.view.LocationsListFragment;
 
-public class LocationListActivity extends BaseActivity {
+public class LocationListActivity extends LocationsActivity implements SortingDialogListener {
 
 	private static final String LIST_TAG = "com.skillshot.android.LIST_TAG";
-	private boolean filterAllAges;
-	private LocationsList locationsList;
-
-	public void setLocationsList(LocationsList locationsList) {
-		this.locationsList = locationsList;
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.activity_main);
-		// Show the Up button in the action bar.
 		setupActionBar();
-		if (savedInstanceState != null) {
-			if (savedInstanceState.containsKey(MapActivity.FILTER_ALL_AGES)) {
-				filterAllAges = savedInstanceState.getBoolean(MapActivity.FILTER_ALL_AGES);
-			}
-		}
-
-		MapActivity.performRequest(this, spiceManager, new ListLocationsRequestListener());
-
-		// However, if we're being restored from a previous state,
-		// then we don't need to do anything and should return or else
-		// we could end up with overlapping fragments.
-		if (savedInstanceState != null) {
-			return;
-		}
-		
 	}
 
 	/**
@@ -71,63 +39,133 @@ public class LocationListActivity extends BaseActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		MenuItem mapItem = menu.findItem(R.id.action_map);
+		MenuItem listItem = menu.findItem(R.id.action_list);
+	    mapItem.setVisible(true);
+	    listItem.setVisible(false);
+
+	    return true;
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.action_map:
+			openMap();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private class ListLocationsRequestListener implements RequestListener<LocationsList> {
+	private void openMap() {
+		Intent intent = new Intent(this, MapActivity.class);
+		startActivity(intent);
+	}
+    
+	@Override
+	protected void onSetLocationsList() {
+		LocationsListFragment listFragment = new LocationsListFragment();
+		Bundle args = new Bundle();
+		args.putSerializable(MapActivity.LOCATIONS_ARRAY, getLocationsList());
+		listFragment.setArguments(args);
+		getFragmentManager().beginTransaction().add(R.id.container, listFragment, LIST_TAG).commit();
+	}
 
-		@Override
-		public void onRequestFailure(SpiceException e) {
-			setProgressBarIndeterminateVisibility(false);
-			Toast.makeText(
-					getBaseContext(), 
-					"Couldn't load data from the server. Please exit the app and try again.", 
-					Toast.LENGTH_LONG).show();
+	@Override
+	public void filter() {
+		Log.d(APPTAG, String.format("list filter started with %d locations.", getLocationsList().size()));
+		ArrayList<Location> filteredList = new ArrayList<Location>();
+		for(Location loc : getLocationsList()) {
+			boolean visible = 
+					(!filterAllAges  || loc.isAll_ages()) // either we're not filtering or the location is all ages (if we are filtering)
+					;
+			if (visible) {
+				filteredList.add(loc);
+			}
 		}
+		Log.d(APPTAG, String.format("list filter ended with %d locations.", filteredList.size()));
+		ListFragment fragment = ((ListFragment) getFragmentManager().findFragmentByTag(LIST_TAG));
+		@SuppressWarnings("unchecked")
+		ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) fragment.getListAdapter();
+		adapter.clear();
+		adapter.addAll(filteredList);
+		sort();
+	}
 
-		@Override
-		public void onRequestSuccess(LocationsList locationsList) {
-			setProgressBarIndeterminateVisibility(false);
-			setLocationsList(locationsList);
-
-			LocationsListFragment firstFragment = new LocationsListFragment();
-			Bundle args = new Bundle();
-			args.putSerializable(MapActivity.LOCATIONS_ARRAY, locationsList);
-			firstFragment.setArguments(args);
-			getFragmentManager().beginTransaction().add(R.id.container, firstFragment, LIST_TAG).commit();		
-
-		}
+	@Override
+	public void onSort(int sort) {
+		filterSort = sort;
+		sort();
 	}
 	
+	private void sort() {
+		ListFragment fragment = ((ListFragment) getFragmentManager().findFragmentByTag(LIST_TAG));
+		@SuppressWarnings("unchecked")
+		ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) fragment.getListAdapter();
+		Comparator<Location> comparator = new AlphaSort();
+		if (filterSort == R.string.distance) {
+			if (getUserLocation() == null) {
+				Toast.makeText(this, R.string.location_unavailable, Toast.LENGTH_SHORT).show();
+				return;
+			}
+			comparator = new DistanceSort();
+		} else if (filterSort == R.string.number_of_games) {
+			comparator = new NumGamesSort();
+		}
+		 
+		adapter.sort(comparator);
+		adapter.notifyDataSetChanged();
+	}
+	
+	private class AlphaSort implements Comparator<Location> {
+
+		@Override
+		public int compare(Location a, Location b) {
+			return a.getName().compareTo(b.getName());
+		}
 		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
+
+	private class DistanceSort implements Comparator<Location> {
+
+		@Override
+		public int compare(Location a, Location b) {
+			float[] aDistance = new float[1];
+			android.location.Location.distanceBetween(
+					getUserLocation().getLatitude(), getUserLocation().getLongitude(), 
+					a.getLatitude(), a.getLongitude(),
+					aDistance);
+			float[] bDistance = new float[1];
+			android.location.Location.distanceBetween(
+					getUserLocation().getLatitude(), getUserLocation().getLongitude(), 
+					b.getLatitude(), b.getLongitude(),
+					bDistance);
+			return Float.compare(aDistance[0], bDistance[0]);
+		}
+		
+	}
+
+	private class NumGamesSort implements Comparator<Location> {
+
+		/***
+		 * This sort is reversed, since we want the locations 
+		 * with more games at the top of the list
+		 */
+		@Override
+		public int compare(Location a, Location b) {
+			return Integer.valueOf(b.getNum_games()).compareTo(a.getNum_games());
+		}
+		
+	}
+
 }

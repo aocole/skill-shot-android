@@ -11,14 +11,20 @@
     <string name="delete">Delete</string>
     <string name="action_filter">Filter</string>
     <string name="action_list">List</string>
+    <string name="action_map">Map</string>
     <string name="website">Website</string>
     <string name="mapToThisLocation">Map to this location</string>
     <string name="callThisLocation">Call this location</string>
     <string name="action_add_game">Add game</string>
-    <string name="title_activity_add_game">AddGameActivity</string>
     <string name="all_ages">All ages</string>
     <string name="twentyone_plus">21+</string>
-    <string name="title_activity_location_list">LocationListActivity</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="sort">Sort</string>
+    <string name="alphabetical">A-Z</string>
+    <string name="distance">Distance</string>
+    <string name="number_of_games"># of Games</string>
+    <string name="n_games">%d games</string>
+    <string name="n_game">%d game</string>
+    <string name="location_unavailable">Your location could not be determined :-(</string>
+    
+    
 </resources>

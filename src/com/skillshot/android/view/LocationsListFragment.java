@@ -13,25 +13,28 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.skillshot.android.BaseActivity;
 import com.skillshot.android.LocationActivity;
-import com.skillshot.android.MapActivity;
+import com.skillshot.android.LocationListActivity;
+import com.skillshot.android.LocationsActivity;
 import com.skillshot.android.R;
 import com.skillshot.android.rest.model.Location;
 
 public class LocationsListFragment extends ListFragment {
-	ArrayList<Location> locationsList = null;
-	private boolean filterAllAges = false;
+	private ArrayList<Location> locationsList = null;
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		locationsList = (ArrayList<Location>) this.getArguments().get(MapActivity.LOCATIONS_ARRAY);
+		locationsList = (ArrayList<Location>) this.getArguments().get(LocationsActivity.LOCATIONS_ARRAY);
+		
+		// We have to clone the object here because actions that modify the list 
+		// adapter later will modify the object in-place. Fun debugging.
+		locationsList = (ArrayList<Location>) locationsList.clone();
 
-		ArrayAdapter<Location> adapter = new ArrayAdapter<Location>(getActivity(), android.R.layout.simple_list_item_1, locationsList);
+		LocationAdapter adapter = new LocationAdapter(getActivity(), R.layout.location_list_item, locationsList);
 		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.fragment_locations_list, container, false);
 		setListAdapter(adapter);
-		filter();
+		((LocationListActivity)getActivity()).filter();
 		
 		return layout;
 	}
@@ -60,29 +63,11 @@ public class LocationsListFragment extends ListFragment {
 		});
 	}
 
-	private void filter() {
-		ArrayList<Location> filteredList = new ArrayList<Location>();
-		for(Location loc : locationsList) {
-			boolean visible = 
-					(!filterAllAges  || loc.isAll_ages()) // either we're not filtering or the location is all ages (if we are filtering)
-					;
-			if (visible) {
-				filteredList.add(loc);
-			}
-		}
-		@SuppressWarnings("unchecked")
-		ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) getListAdapter();
-		adapter.clear();
-		adapter.addAll(filteredList);
-		adapter.notifyDataSetChanged();
-	}
-
 	@Override
-	public void onListItemClick(ListView listView, View itemView, int position,
-			long id) {
+	public void onListItemClick(ListView listView, View itemView, int position, long id) {
 		Location location = (Location)listView.getItemAtPosition(position);
 		Intent intent = new Intent(getActivity(), LocationActivity.class);
-		intent.putExtra(MapActivity.LOCATION_ID, location.getId());
+		intent.putExtra(LocationsActivity.LOCATION_ID, location.getId());
 		startActivity(intent);	
 	}
 

@@ -14,6 +14,7 @@ public class Location implements Serializable {
 	private String phone;
 	private String url;
 	private boolean all_ages;
+	private int num_games;
 	private Machine[] machines;
 	public Machine[] getMachines() {
 		return machines;
@@ -84,5 +85,11 @@ public class Location implements Serializable {
 	}
 	public void setAll_ages(boolean all_ages) {
 		this.all_ages = all_ages;
+	}
+	public int getNum_games() {
+		return num_games;
+	}
+	public void setNum_games(int num_games) {
+		this.num_games = num_games;
 	}
 }

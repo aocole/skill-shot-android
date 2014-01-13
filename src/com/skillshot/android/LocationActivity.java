@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -118,7 +117,8 @@ public class LocationActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			// Using finish instead of navigating up so that we return to map or list caller
+			finish();
 			return true;
 		case R.id.action_add_game:
 			Intent intent = new Intent(getBaseContext(), AddGameActivity.class);
