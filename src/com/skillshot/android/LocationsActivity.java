@@ -84,16 +84,32 @@ public abstract class LocationsActivity extends BaseActivity implements FilterDi
 	}
 	
 	public String userDistanceString(double latitude, double longitude) {
-		float[] aDistance = new float[1];
-		Location.distanceBetween(getUserLocation().getLatitude(),
-				getUserLocation().getLongitude(), latitude, longitude, aDistance);
-		float distanceMiles = aDistance[0] * MILES_PER_METER;
+		return metersToMilesString(userDistance(latitude, longitude));
+	}
+	
+	public String userDistanceString(com.skillshot.android.rest.model.Location location) {
+		return metersToMilesString(userDistance(location));
+	}
+	
+	private String metersToMilesString(float meters) {
+		float distanceMiles = meters * MILES_PER_METER;
 		String formatString = distanceMiles > 1 
 				? distanceMiles >= 10
 						? "%.0f"
 						: "%.1f"
 				: "%.2f";
 		return String.format(formatString + " mi", distanceMiles);
+	}
+	
+	public float userDistance(double latitude, double longitude) {
+		float[] aDistance = new float[1];
+		Location.distanceBetween(getUserLocation().getLatitude(),
+				getUserLocation().getLongitude(), latitude, longitude, aDistance);
+		return aDistance[0];
+	}
+
+	public float userDistance(com.skillshot.android.rest.model.Location location) {
+		return userDistance(location.getLatitude(), location.getLongitude());
 	}
 
 	// Define the callback method that receives location updates
@@ -117,7 +133,7 @@ public abstract class LocationsActivity extends BaseActivity implements FilterDi
 		LocationsRequest request = new LocationsRequest();
 		String lastRequestCacheKey = request.createCacheKey();
 
-		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ALWAYS_EXPIRED, listener);
+		spiceManager.execute(request, lastRequestCacheKey, DurationInMillis.ONE_WEEK, listener);
 	}
 
 

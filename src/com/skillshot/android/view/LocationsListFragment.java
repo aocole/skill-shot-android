@@ -14,27 +14,18 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.skillshot.android.LocationActivity;
-import com.skillshot.android.LocationListActivity;
 import com.skillshot.android.LocationsActivity;
 import com.skillshot.android.R;
 import com.skillshot.android.rest.model.Location;
 
 public class LocationsListFragment extends ListFragment {
-	private ArrayList<Location> locationsList = null;
+	private ArrayList<Location> locationsList = new ArrayList<Location>();
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		locationsList = (ArrayList<Location>) this.getArguments().get(LocationsActivity.LOCATIONS_ARRAY);
-		
-		// We have to clone the object here because actions that modify the list 
-		// adapter later will modify the object in-place. Fun debugging.
-		locationsList = (ArrayList<Location>) locationsList.clone();
-
 		LocationAdapter adapter = new LocationAdapter(getActivity(), R.layout.location_list_item, locationsList);
 		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.fragment_locations_list, container, false);
 		setListAdapter(adapter);
-		((LocationListActivity)getActivity()).filter();
 		
 		return layout;
 	}

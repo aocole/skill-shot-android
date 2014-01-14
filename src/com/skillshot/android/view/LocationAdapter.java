@@ -51,7 +51,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
 				: activity.getResources().getString(R.string.n_games);
         holder.numGames.setText(String.format(formatString, location.getNum_games()));
 		if(activity.getUserLocation() != null) {
-			holder.distance.setText(activity.userDistanceString(location.getLatitude(), location.getLongitude()));
+			holder.distance.setText(activity.userDistanceString(location));
 		} else {
 			holder.distance.setText("");
 		}

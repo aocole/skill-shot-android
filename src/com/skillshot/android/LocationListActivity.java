@@ -7,7 +7,6 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -25,6 +24,9 @@ public class LocationListActivity extends LocationsActivity implements SortingDi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setupActionBar();
+
+		LocationsListFragment listFragment = new LocationsListFragment();
+		getFragmentManager().beginTransaction().replace(R.id.container, listFragment, LIST_TAG).commit();
 	}
 
 	/**
@@ -74,16 +76,11 @@ public class LocationListActivity extends LocationsActivity implements SortingDi
     
 	@Override
 	protected void onSetLocationsList() {
-		LocationsListFragment listFragment = new LocationsListFragment();
-		Bundle args = new Bundle();
-		args.putSerializable(MapActivity.LOCATIONS_ARRAY, getLocationsList());
-		listFragment.setArguments(args);
-		getFragmentManager().beginTransaction().add(R.id.container, listFragment, LIST_TAG).commit();
+		filter();
 	}
 
 	@Override
 	public void filter() {
-		Log.d(APPTAG, String.format("list filter started with %d locations.", getLocationsList().size()));
 		ArrayList<Location> filteredList = new ArrayList<Location>();
 		for(Location loc : getLocationsList()) {
 			boolean visible = 
@@ -93,7 +90,6 @@ public class LocationListActivity extends LocationsActivity implements SortingDi
 				filteredList.add(loc);
 			}
 		}
-		Log.d(APPTAG, String.format("list filter ended with %d locations.", filteredList.size()));
 		ListFragment fragment = ((ListFragment) getFragmentManager().findFragmentByTag(LIST_TAG));
 		@SuppressWarnings("unchecked")
 		ArrayAdapter<Location> adapter = (ArrayAdapter<Location>) fragment.getListAdapter();
@@ -140,17 +136,7 @@ public class LocationListActivity extends LocationsActivity implements SortingDi
 
 		@Override
 		public int compare(Location a, Location b) {
-			float[] aDistance = new float[1];
-			android.location.Location.distanceBetween(
-					getUserLocation().getLatitude(), getUserLocation().getLongitude(), 
-					a.getLatitude(), a.getLongitude(),
-					aDistance);
-			float[] bDistance = new float[1];
-			android.location.Location.distanceBetween(
-					getUserLocation().getLatitude(), getUserLocation().getLongitude(), 
-					b.getLatitude(), b.getLongitude(),
-					bDistance);
-			return Float.compare(aDistance[0], bDistance[0]);
+			return Float.compare(userDistance(a), userDistance(b));
 		}
 		
 	}
