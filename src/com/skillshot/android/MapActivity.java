@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -88,8 +87,6 @@ public class MapActivity extends LocationsActivity implements FilterDialogListen
 		@Override
 		public boolean onMarkerClick(Marker marker) {
 			if(getUserLocation() != null) {
-				Log.d(APPTAG, String.format("userLocation is %f, %f", getUserLocation().getLatitude(), getUserLocation().getLongitude()));
-				Log.d(APPTAG, String.format("marker Position is %f, %f", marker.getPosition().latitude, marker.getPosition().longitude));
 				marker.setSnippet(userDistanceString(marker.getPosition().latitude, marker.getPosition().longitude));
 			}
 			return false;
@@ -130,7 +127,6 @@ public class MapActivity extends LocationsActivity implements FilterDialogListen
 	@Override
 	public void onResume() {
 	    super.onResume();
-	    Log.d(APPTAG, "on Resume");
 	    SharedPreferences settings = getSharedPreferences(MAP_STATE, MODE_PRIVATE);
 	    double latitude = getDouble(settings, "latitude", SHORTYS_LAT);
 	    double longitude = getDouble(settings, "longitude", SHORTYS_LONG);

@@ -274,9 +274,7 @@ public class LoginActivity extends BaseActivity {
 					if(null != val) {
 						String cookie = val.get(0);
 						editor.putString(PREF_TOKEN, cookie);
-						if (editor.commit()) {
-							Log.d(APPTAG, String.format("Stored token: %s", cookie));
-						} else {
+						if (!editor.commit()) {
 							Log.d(APPTAG, "Error saving token!!");
 						}
 					}

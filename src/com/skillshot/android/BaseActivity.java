@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -171,9 +170,6 @@ public class BaseActivity extends Activity implements
 
         // If Google Play services is available
         if (ConnectionResult.SUCCESS == resultCode) {
-            // In debug mode, log the status
-            Log.d(APPTAG, "Google play services available!");
-
             // Continue
             return true;
         // Google Play services was not available for some reason
@@ -273,11 +269,9 @@ public class BaseActivity extends Activity implements
 	}
 	
 	protected boolean checkAuthentication(SpiceException e) {
-		Log.d(APPTAG, "Checking authentication.");
 		if(!(e.getCause() instanceof AuthenticationFailedException)) {
 			return false;
 		}
-		Log.d(APPTAG, "Was authentication failure. Launching login.");
 		
 		logout();
 		Toast.makeText(

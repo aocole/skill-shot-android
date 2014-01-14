@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 
-import android.util.Log;
-
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
-import com.skillshot.android.BaseActivity;
 
 public abstract class AuthenticatingRequest<RESULT> extends SpringAndroidSpiceRequest<RESULT> {
 	protected String cookie = null;
@@ -30,7 +27,6 @@ public abstract class AuthenticatingRequest<RESULT> extends SpringAndroidSpiceRe
 			return authenticatedLoadDataFromNetwork();
 		} catch (HttpClientErrorException e) {
 			if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-				Log.d(BaseActivity.APPTAG, "Authentication failed.");
 				throw new AuthenticationFailedException();
 			}
 			throw e;

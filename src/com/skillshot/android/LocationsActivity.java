@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -39,7 +38,6 @@ public abstract class LocationsActivity extends BaseActivity implements FilterDi
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
-		Log.d(APPTAG, "onCreate");
 		
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey(FILTER_ALL_AGES)) {
@@ -139,7 +137,6 @@ public abstract class LocationsActivity extends BaseActivity implements FilterDi
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		Log.d(APPTAG, "Preparing options menu");
 		MenuItem logoutItem = menu.findItem(R.id.action_logout);
 		MenuItem loginItem = menu.findItem(R.id.action_login);
 
