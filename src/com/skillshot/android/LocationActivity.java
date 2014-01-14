@@ -104,7 +104,6 @@ public class LocationActivity extends BaseActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		Log.d(APPTAG, "Preparing options menu");
 		MenuItem addGameItem = menu.findItem(R.id.action_add_game);
 
 		boolean showLoggedIn = isLoggedIn();
