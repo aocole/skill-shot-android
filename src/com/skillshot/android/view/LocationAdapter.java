@@ -46,10 +46,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
         
         Location location = data.get(position);
         holder.title.setText(location.getName());
-        String formatString = location.getNum_games() == 1 
-        		? activity.getResources().getString(R.string.n_game) 
-				: activity.getResources().getString(R.string.n_games);
-        holder.numGames.setText(String.format(formatString, location.getNum_games()));
+        holder.numGames.setText(activity.numGamesString(location.getNum_games()));
 		if(activity.getUserLocation() != null) {
 			holder.distance.setText(activity.userDistanceString(location));
 		} else {

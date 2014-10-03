@@ -81,6 +81,13 @@ public abstract class LocationsActivity extends BaseActivity implements FilterDi
 
 	}
 	
+	public String numGamesString(int num) {
+        String formatString = num == 1 
+        		? getResources().getString(R.string.n_game) 
+				: getResources().getString(R.string.n_games);
+		return String.format(formatString, num);
+	}
+	
 	public String userDistanceString(double latitude, double longitude) {
 		return metersToMilesString(userDistance(latitude, longitude));
 	}

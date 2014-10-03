@@ -86,9 +86,12 @@ public class MapActivity extends LocationsActivity implements FilterDialogListen
 	private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
 		@Override
 		public boolean onMarkerClick(Marker marker) {
+			String snippet = "";
 			if(getUserLocation() != null) {
-				marker.setSnippet(userDistanceString(marker.getPosition().latitude, marker.getPosition().longitude));
+				snippet += userDistanceString(marker.getPosition().latitude, marker.getPosition().longitude) + " – ";
 			}
+			snippet += numGamesString(allMarkersMap.get(marker).getNum_games());
+			marker.setSnippet(snippet);
 			return false;
 		}
 	}
