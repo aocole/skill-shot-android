@@ -44,7 +44,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
             holder = (LocationHolder)row.getTag();
         }
         
-        Location location = data.get(position);
+        Location location = getItem(position);
         holder.title.setText(location.getName());
         holder.numGames.setText(activity.numGamesString(location.getNum_games()));
 		if(activity.getUserLocation() != null) {
