@@ -3,7 +3,7 @@ skill-shot-android
 
 Skill Shot App for Android
 
-
+To install the app on your Android device, see the [play store listing](https://play.google.com/store/apps/details?id=com.skillshot.android)
 
 Copyright 2013-2014 Andrew Cole
   
